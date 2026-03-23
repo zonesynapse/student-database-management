@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marks Pivot Table</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar">
+            <div class="brand-block">
+                <span class="brand-dot"></span>
+                <div>
+                    <h1>Student Management</h1>
+                    <p>Premium academic records dashboard</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                <a class="nav-link" href="{{ url_for('register_student') }}">Register</a>
+                <a class="nav-link" href="{{ url_for('students_list') }}">Students</a>
+                <a class="nav-link" href="{{ url_for('marks_management') }}">Marks</a>
+                <a class="nav-link active" href="{{ url_for('marks_pivot_table') }}">Pivot</a>
+                <a class="nav-link" href="{{ url_for('bulk_upload_students') }}">Upload</a>
+            </nav>
+        </header>
+
+        <main class="content-grid">
+            <section class="table-card">
+                <div class="section-head section-head-inline">
+                    <div>
+                        <p class="eyebrow">Pivot View</p>
+                        <h2>Semester Marks Pivot Table</h2>
+                        <p class="muted">
+                            Rows show students by roll number and columns are generated dynamically from
+                            subjects in the selected semester.
+                        </p>
+                    </div>
+                </div>
+
+                <form method="GET" action="{{ url_for('marks_pivot_table') }}" class="filter-bar pivot-filter-bar">
+                    <div class="filter-group">
+                        <label for="department">Department</label>
+                        <select id="department" name="department">
+                            <option value="">All Departments</option>
+                            {% for row in departments %}
+                            <option value="{{ row.department }}" {% if selected_department == row.department %}selected{% endif %}>
+                                {{ row.department }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="batch">Batch (Year of Joining)</label>
+                        <select id="batch" name="batch">
+                            <option value="">All Batches</option>
+                            {% for row in batches %}
+                            <option value="{{ row.year_of_joining }}" {% if selected_batch|string == row.year_of_joining|string %}selected{% endif %}>
+                                {{ row.year_of_joining }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="semester">Semester</label>
+                        <select id="semester" name="semester" required>
+                            {% for semester in range(1, 9) %}
+                            <option value="{{ semester }}" {% if selected_semester == semester %}selected{% endif %}>
+                                Semester {{ semester }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" type="submit">Apply Filters</button>
+                        <a class="btn btn-secondary" href="{{ url_for('marks_pivot_table') }}">Reset</a>
+                    </div>
+                </form>
+
+                <div class="view-toggle-row">
+                    <a
+                        class="btn {% if selected_view_mode == 'marks' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm"
+                        href="{{ url_for('marks_pivot_table', department=selected_department, batch=selected_batch, semester=selected_semester, view='marks') }}"
+                    >
+                        View Marks
+                    </a>
+                    <a
+                        class="btn {% if selected_view_mode == 'grades' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm"
+                        href="{{ url_for('marks_pivot_table', department=selected_department, batch=selected_batch, semester=selected_semester, view='grades') }}"
+                    >
+                        View Grades
+                     </a>
+                 </div>
+
+                {% if pivot_rows %}
+                <div class="pivot-table-wrap">
+                    <table class="pivot-table">
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                {% for subject in subjects %}
+                                <th>{{ subject }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in pivot_rows %}
+                            <tr>
+                                <td>
+                                    <div class="pivot-student-cell">
+                                        <span class="roll-pill">{{ row.roll_number }}</span>
+                                        <span class="pivot-student-name">{{ row.name }}</span>
+                                    </div>
+                                </td>
+                                {% for subject in subjects %}
+                                <td>{{ row.subject_values[subject] }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% elif subjects %}
+                <div class="empty-state">
+                    <h3>No students found for selected filters</h3>
+                    <p>Try selecting another department or batch.</p>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No subjects found for selected semester</h3>
+                    <p>Subjects are generated dynamically from marks data. Add marks first, then reload this view.</p>
+                </div>
+                {% endif %}
+            </section>
+        </main>
+
+        <footer class="footer-note">
+            <p>Student Management System</p>
+        </footer>
+    </div>
+</body>
+</html>

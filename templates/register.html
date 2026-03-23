@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Student</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar">
+            <div class="brand-block">
+                <span class="brand-dot"></span>
+                <div>
+                    <h1>Student Management</h1>
+                    <p>Premium academic records dashboard</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                <a class="nav-link active" href="{{ url_for('register_student') }}">Register</a>
+                <a class="nav-link" href="{{ url_for('students_list') }}">Students</a>
+                <a class="nav-link" href="{{ url_for('marks_management') }}">Marks</a>
+                <a class="nav-link" href="{{ url_for('marks_pivot_table') }}">Pivot</a>
+                <a class="nav-link" href="{{ url_for('bulk_upload_students') }}">Upload</a>
+            </nav>
+        </header>
+
+        <main class="content-grid">
+            <section class="form-card">
+                <div class="section-head">
+                    <p class="eyebrow">Student Registration</p>
+                    <h2>Add a new student profile</h2>
+                    <p class="muted">Fill in all fields carefully before saving the record.</p>
+                </div>
+
+                <form method="POST" class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            placeholder="Enter full name"
+                            minlength="3"
+                            maxlength="60"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" name="department" required>
+                            <option value="" disabled selected>Select department</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Electronics and Communication">Electronics and Communication</option>
+                            <option value="Electrical and Electronics">Electrical and Electronics</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Civil">Civil</option>
+                            <option value="Commerce">Commerce</option>
+                            <option value="Business Administration">Business Administration</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="year_of_joining">Year of Joining</label>
+                        <input
+                            id="year_of_joining"
+                            type="number"
+                            name="year_of_joining"
+                            placeholder="2026"
+                            min="2000"
+                            max="2100"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tenth_mark">10th Mark</label>
+                        <input
+                            id="tenth_mark"
+                            type="number"
+                            step="0.01"
+                            name="tenth_mark"
+                            placeholder="0 - 100"
+                            min="0"
+                            max="100"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="twelfth_mark">12th Mark</label>
+                        <input
+                            id="twelfth_mark"
+                            type="number"
+                            step="0.01"
+                            name="twelfth_mark"
+                            placeholder="0 - 100"
+                            min="0"
+                            max="100"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aadhar_number">Aadhar Number</label>
+                        <input
+                            id="aadhar_number"
+                            type="text"
+                            name="aadhar_number"
+                            placeholder="12-digit number"
+                            inputmode="numeric"
+                            pattern="[0-9]{12}"
+                            maxlength="12"
+                            title="Aadhar number must be exactly 12 digits"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pan_number">PAN Number</label>
+                        <input
+                            id="pan_number"
+                            type="text"
+                            name="pan_number"
+                            placeholder="ABCDE1234F"
+                            pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"
+                            maxlength="10"
+                            title="PAN must follow format: ABCDE1234F"
+                            style="text-transform: uppercase;"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Save Student</button>
+                        <a class="btn btn-secondary" href="{{ url_for('home') }}">Back to Home</a>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

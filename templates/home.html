@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Management Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar">
+            <div class="brand-block">
+                <span class="brand-dot"></span>
+                <div>
+                    <h1>Student Management</h1>
+                    <p>Premium academic records dashboard</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
+                <a class="nav-link" href="{{ url_for('register_student') }}">Register</a>
+                <a class="nav-link" href="{{ url_for('students_list') }}">Students</a>
+                <a class="nav-link" href="{{ url_for('marks_management') }}">Marks</a>
+                <a class="nav-link" href="{{ url_for('marks_pivot_table') }}">Pivot</a>
+                <a class="nav-link" href="{{ url_for('bulk_upload_students') }}">Upload</a>
+            </nav>
+        </header>
+
+        <main class="content-grid">
+            <section class="hero-card">
+                <p class="eyebrow">Dashboard Overview</p>
+                <h2>Student analytics and records at a glance.</h2>
+                <p class="muted">
+                    View live student metrics, department-wise distribution, and recent
+                    registrations from one clean management panel.
+                </p>
+
+                <div class="actions">
+                    <a class="btn btn-primary" href="{{ url_for('register_student') }}">Register Student</a>
+                    <a class="btn btn-secondary" href="{{ url_for('students_list') }}">View Students</a>
+                </div>
+            </section>
+
+            <section class="metrics-grid">
+                <article class="metric-card">
+                    <p class="metric-label">Total Students</p>
+                    <h3 class="metric-value">{{ total_students }}</h3>
+                    <p class="metric-note">Overall registered student count</p>
+                </article>
+
+                <article class="metric-card">
+                    <p class="metric-label">Departments</p>
+                    <h3 class="metric-value">{{ department_counts|length }}</h3>
+                    <p class="metric-note">Active departments in records</p>
+                </article>
+
+                <article class="metric-card">
+                    <p class="metric-label">Recent Entries</p>
+                    <h3 class="metric-value">{{ recent_students|length }}</h3>
+                    <p class="metric-note">Latest student records shown below</p>
+                </article>
+            </section>
+
+            <section class="dashboard-panels">
+                <article class="panel-card">
+                    <div class="panel-head">
+                        <p class="eyebrow">Departments</p>
+                        <h3>Department-wise Count</h3>
+                    </div>
+
+                    {% if department_counts %}
+                    <div class="dept-list">
+                        {% for row in department_counts %}
+                        <div class="dept-item">
+                            <span class="dept-name">{{ row.department }}</span>
+                            <span class="dept-count">{{ row.student_count }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="muted">No department data available yet.</p>
+                    {% endif %}
+                </article>
+
+                <article class="panel-card">
+                    <div class="panel-head">
+                        <p class="eyebrow">Recent Students</p>
+                        <h3>Latest Entries</h3>
+                    </div>
+
+                    {% if recent_students %}
+                    <div class="recent-table-wrap">
+                        <table class="compact-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Year</th>
+                                    <th>10th</th>
+                                    <th>12th</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in recent_students %}
+                                <tr>
+                                    <td><span class="roll-pill">{{ student.roll_number }}</span></td>
+                                    <td>{{ student.name }}</td>
+                                    <td>{{ student.department }}</td>
+                                    <td>{{ student.year_of_joining }}</td>
+                                    <td>{{ student.tenth_mark }}</td>
+                                    <td>{{ student.twelfth_mark }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="muted">No student entries available yet.</p>
+                    {% endif %}
+                </article>
+            </section>
+        </main>
+
+        <footer class="footer-note">
+            <p>Student Management System</p>
+        </footer>
+    </div>
+ </body>
+</html>

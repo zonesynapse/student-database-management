@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Students List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar">
+            <div class="brand-block">
+                <span class="brand-dot"></span>
+                <div>
+                    <h1>Student Management</h1>
+                    <p>Premium academic records dashboard</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                <a class="nav-link" href="{{ url_for('register_student') }}">Register</a>
+                <a class="nav-link active" href="{{ url_for('students_list') }}">Students</a>
+                <a class="nav-link" href="{{ url_for('marks_management') }}">Marks</a>
+                <a class="nav-link" href="{{ url_for('marks_pivot_table') }}">Pivot</a>
+                <a class="nav-link" href="{{ url_for('bulk_upload_students') }}">Upload</a>
+            </nav>
+        </header>
+
+        <main class="content-grid">
+            <section class="table-card">
+                <div class="section-head section-head-inline">
+                    <div>
+                        <p class="eyebrow">Directory</p>
+                        <h2>Student List</h2>
+                        <p class="muted">All registered student profiles are listed below.</p>
+                    </div>
+                    <a class="btn btn-primary" href="{{ url_for('register_student') }}">Add Student</a>
+                </div>
+
+                {% if latest_roll_number %}
+                <div class="success-banner">
+                    Student registered successfully. Generated Roll Number: <strong>{{ latest_roll_number }}</strong>
+                </div>
+                {% endif %}
+
+                <form method="GET" action="{{ url_for('students_list') }}" class="filter-bar">
+                    <div class="filter-group">
+                        <label for="roll_number">Search by Roll Number</label>
+                        <input
+                            id="roll_number"
+                            type="text"
+                            name="roll_number"
+                            placeholder="Enter roll number (e.g., 001)"
+                            value="{{ search_roll_number }}"
+                        />
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="department">Filter by Department</label>
+                        <select id="department" name="department">
+                            <option value="">All Departments</option>
+                            {% for department in departments %}
+                            <option
+                                value="{{ department.department }}"
+                                {% if selected_department == department.department %}selected{% endif %}
+                            >
+                                {{ department.department }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" type="submit">Apply</button>
+                        <a class="btn btn-secondary" href="{{ url_for('students_list') }}">Clear</a>
+                    </div>
+                </form>
+
+                {% if students %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Year of Joining</th>
+                                <th>10th Mark</th>
+                                <th>12th Mark</th>
+                                <th>Aadhar Number</th>
+                                <th>PAN Number</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td><span class="roll-pill">{{ student.roll_number }}</span></td>
+                                <td>{{ student.id }}</td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.department }}</td>
+                                <td>{{ student.year_of_joining }}</td>
+                                <td>{{ student.tenth_mark }}</td>
+                                <td>{{ student.twelfth_mark }}</td>
+                                <td>{{ student.aadhar_number }}</td>
+                                <td>{{ student.pan_number }}</td>
+                                <td>
+                                    <a
+                                        class="btn btn-secondary btn-sm"
+                                        href="{{ url_for('marks_management', roll_number=student.roll_number) }}"
+                                    >
+                                        Manage Marks
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No students registered yet</h3>
+                    <p>Start by adding your first student record.</p>
+                </div>
+                {% endif %}
+
+                <div class="actions">
+                    <a class="btn btn-secondary" href="{{ url_for('home') }}">Back to Home</a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer-note">
+            <p>Student Management System</p>
+        </footer>
+    </div>
+</body>
+</html>

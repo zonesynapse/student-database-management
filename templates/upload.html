@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bulk Upload Students</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar">
+            <div class="brand-block">
+                <span class="brand-dot"></span>
+                <div>
+                    <h1>Student Management</h1>
+                    <p>Premium academic records dashboard</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                <a class="nav-link" href="{{ url_for('register_student') }}">Register</a>
+                <a class="nav-link" href="{{ url_for('students_list') }}">Students</a>
+                <a class="nav-link" href="{{ url_for('marks_management') }}">Marks</a>
+                <a class="nav-link" href="{{ url_for('marks_pivot_table') }}">Pivot</a>
+                <a class="nav-link active" href="{{ url_for('bulk_upload_students') }}">Upload</a>
+            </nav>
+        </header>
+
+        <main class="content-grid">
+            <section class="form-card">
+                <div class="section-head">
+                    <p class="eyebrow">Bulk Upload</p>
+                    <h2>Upload Students from CSV or Excel</h2>
+                    <p class="muted">Accepted formats: .csv and .xlsx</p>
+                </div>
+
+                {% if success_message %}
+                <div class="success-banner">{{ success_message }}</div>
+                {% endif %}
+
+                {% if skipped_message %}
+                <div class="warning-banner">{{ skipped_message }}</div>
+                {% endif %}
+
+                {% if error_message %}
+                <div class="error-banner">{{ error_message }}</div>
+                {% endif %}
+
+                <div class="upload-help-card">
+                    <h3>Required Columns</h3>
+                    <p class="muted">
+                        name, department, year_of_joining, tenth_mark, twelfth_mark,
+                        aadhar_number, pan_number
+                    </p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" class="upload-form">
+                    <input type="hidden" name="action" value="preview" />
+                    <div class="form-group">
+                        <label for="student_file">Choose File</label>
+                        <input id="student_file" type="file" name="student_file" accept=".csv,.xlsx" required />
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Preview Data</button>
+                        <a class="btn btn-secondary" href="{{ url_for('students_list') }}">Go to Students</a>
+                    </div>
+                </form>
+
+                {% if preview_rows %}
+                <div class="preview-summary-row">
+                    <span class="summary-pill success">Valid Rows: {{ valid_count }}</span>
+                    <span class="summary-pill warning">Invalid Rows: {{ invalid_count }}</span>
+                </div>
+
+                <div class="table-wrap preview-table-wrap">
+                    <table class="preview-table">
+                        <thead>
+                            <tr>
+                                <th>Row</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Batch</th>
+                                <th>10th</th>
+                                <th>12th</th>
+                                <th>Aadhar</th>
+                                <th>PAN</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in preview_rows %}
+                            <tr class="{% if not row.is_valid %}invalid-preview-row{% endif %}">
+                                <td>{{ row.row_number }}</td>
+                                <td>{{ row.data.name }}</td>
+                                <td>{{ row.data.department }}</td>
+                                <td>{{ row.data.year_of_joining }}</td>
+                                <td>{{ row.data.tenth_mark }}</td>
+                                <td>{{ row.data.twelfth_mark }}</td>
+                                <td>{{ row.data.aadhar_number }}</td>
+                                <td>{{ row.data.pan_number }}</td>
+                                <td>
+                                    {% if row.is_valid %}
+                                    <span class="status-chip valid">Valid</span>
+                                    {% else %}
+                                    <span class="status-chip invalid">{{ row.reason }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if show_confirm_button %}
+                <form method="POST" class="confirm-upload-form">
+                    <input type="hidden" name="action" value="confirm" />
+                    <button class="btn btn-primary" type="submit">Confirm and Save Valid Rows</button>
+                </form>
+                {% endif %}
+                {% endif %}
+            </section>
+        </main>
+
+        <footer class="footer-note">
+            <p>Student Management System</p>
+        </footer>
+    </div>
+</body>
+</html>
